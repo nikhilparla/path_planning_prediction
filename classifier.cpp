@@ -74,6 +74,10 @@ void GNB::train(const vector<vector<double>> &data,
   int count_keep = 0;
   int count_right = 0;
 
+  double prob_left;
+  double prob_keep;
+  double prob_right;
+
   // printf("Size of data0 is %lu \n", data[0].size()) ;
   // printf("The first value is %f \n", data[0][0]);
 
@@ -230,6 +234,15 @@ void GNB::train(const vector<vector<double>> &data,
   cout << stddev_keep_s << " , " << stddev_keep_d << " , " << stddev_keep_s_dot << " , " << stddev_keep_d_dot << endl;
   cout << "Printing the stddev values of right ..." << endl;
   cout << stddev_right_s << " , " << stddev_right_d << " , " << stddev_right_s_dot << " , " << stddev_right_d_dot << endl;
+
+  prob_left = count_left/labels.size();
+  prob_keep = count_keep/labels.size();
+  prob_right = prob_right/labels.size();
+
+  cout << endl;
+  cout << "Printing the probablilites..." << endl;
+  cout << prob_left << " , " << prob_keep << " , " << prob_right << endl;
+
 }
 
 string GNB::predict(const vector<double> &sample)

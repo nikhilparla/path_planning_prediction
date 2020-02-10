@@ -20,4 +20,8 @@
  - Probabilistic classification
  - Extrapolating to genetate trajectories
 
-
+##### Cmake configuration
+ - Added CMakeLists.txt file to the folder for build
+ - Takes classifier.cpp and main.cpp and buils main.o
+ - Added the c++11 flag for compilation
+ - Added 'generator expressions' for copying the target as a post build step

@@ -2,3 +2,4 @@ main
 nd013-pred-data.zip
 nd013_pred_data/
 .vscode/
+build/*
