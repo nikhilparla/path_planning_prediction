@@ -2,8 +2,7 @@
 #include <math.h>
 #include <string>
 #include <vector>
-#include<iostream>
-
+#include <iostream>
 
 using Eigen::ArrayXd;
 using std::string;
@@ -11,17 +10,18 @@ using std::vector;
 using namespace std;
 
 // Initializes GNB
-GNB::GNB() {
+GNB::GNB()
+{
   /**
    * TODO: Initialize GNB, if necessary. May depend on your implementation.
    */
-  
 }
 
 GNB::~GNB() {}
 
-void GNB::train(const vector<vector<double>> &data, 
-                const vector<string> &labels) {
+void GNB::train(const vector<vector<double>> &data,
+                const vector<string> &labels)
+{
   /**
    * Trains the classifier with N data points and labels.
    * @param data - array of N observations
@@ -40,15 +40,6 @@ void GNB::train(const vector<vector<double>> &data,
   // we have 4 features and 3 labels == 12 means and 12 std devs
   // so 24 variables in total if brute forcing
   // starting with mean for s/left feature lable
-  double sum_s = 0;
-  double sum_d = 0;
-  double sum_sdot = 0;
-  double sum_ddot = 0;
-  double mean_s = 0;
-  double mean_d = 0;
-  double mean_sdot = 0;
-  double mean_ddot = 0;
-
   double mean_left_s;
   double mean_left_d;
   double mean_left_s_dot;
@@ -85,7 +76,7 @@ void GNB::train(const vector<vector<double>> &data,
 
   // printf("Size of data0 is %lu \n", data[0].size()) ;
   // printf("The first value is %f \n", data[0][0]);
-  
+
   // vector<double>::const_iterator it;
   // cout << "The vector1 elements are: ";
   // for ( it = data[0].begin(); it != data[0].end(); ++it)
@@ -140,12 +131,12 @@ void GNB::train(const vector<vector<double>> &data,
   mean_left_s = mean_left_s / count_left;
   mean_left_d = mean_left_d / count_left;
   mean_left_s_dot = mean_left_s_dot / count_left;
-  mean_left_d_dot = mean_right_d_dot / count_left;
+  mean_left_d_dot = mean_left_d_dot / count_left;
 
   mean_keep_s = mean_keep_s / count_keep;
   mean_keep_d = mean_keep_d / count_keep;
   mean_keep_s_dot = mean_keep_s_dot / count_keep;
-  mean_keep_d_dot = mean_left_d_dot / count_keep;
+  mean_keep_d_dot = mean_keep_d_dot / count_keep;
 
   mean_right_s = mean_right_s / count_right;
   mean_right_d = mean_right_d / count_right;
@@ -153,14 +144,96 @@ void GNB::train(const vector<vector<double>> &data,
   mean_right_d_dot = mean_right_d_dot / count_right;
 
   cout << "Printing the mean values of left ..." << endl;
-  cout << mean_left_s << " , " << mean_left_d <<  " , " << mean_left_s_dot <<  " , " << mean_left_d_dot << endl;
+  cout << mean_left_s << " , " << mean_left_d << " , " << mean_left_s_dot << " , " << mean_left_d_dot << endl;
   cout << "Printing the mean values of keep ..." << endl;
-  cout << mean_keep_s << " , " << mean_keep_d <<  " , " << mean_keep_s_dot <<  " , " << mean_keep_d_dot << endl;
+  cout << mean_keep_s << " , " << mean_keep_d << " , " << mean_keep_s_dot << " , " << mean_keep_d_dot << endl;
   cout << "Printing the mean values of right ..." << endl;
-  cout << mean_right_s << " , " << mean_right_d <<  " , " << mean_right_s_dot <<  " , " << mean_right_d_dot << endl;
+  cout << mean_right_s << " , " << mean_right_d << " , " << mean_right_s_dot << " , " << mean_right_d_dot << endl;
+
+  // find variance
+  for (int i = 0; i < labels.size(); i++)
+  {
+    int lab;
+    if (!(labels[i].compare("left")))
+      lab = 0;
+    else if (!(labels[i].compare("keep")))
+      lab = 1;
+    else if (!(labels[i].compare("right")))
+      lab = 2;
+    else
+      ;
+
+    switch (lab)
+    {
+    case 0: // left
+    {
+      stddev_left_s += pow(data[i][0] - mean_left_s, 2);
+      stddev_left_d += pow(data[i][1] - mean_left_d, 2);
+      stddev_left_s_dot += pow(data[i][2] - mean_left_s_dot, 2);
+      stddev_left_d_dot += pow(data[i][3] - mean_left_d_dot, 2);
+    }
+    case 1: // keep
+    {
+      stddev_keep_s += pow(data[i][0] - mean_keep_s, 2);
+      stddev_keep_d += pow(data[i][1] - mean_keep_d, 2);
+      stddev_keep_s_dot += pow(data[i][2] - mean_keep_s_dot, 2);
+      stddev_keep_d_dot += pow(data[i][3] - mean_keep_d_dot, 2);
+    }
+    case 2: // right
+    {
+      stddev_right_s += pow(data[i][0] - mean_right_s, 2);
+      stddev_right_d += pow(data[i][1] - mean_right_d, 2);
+      stddev_right_s_dot += pow(data[i][2] - mean_right_s_dot, 2);
+      stddev_right_d_dot += pow(data[i][3] - mean_right_d_dot, 2);
+    }
+    } // end of switch
+  }
+  stddev_left_s = stddev_left_s / count_left;
+  stddev_left_s = sqrt(stddev_left_s);
+
+  stddev_left_d = stddev_left_d / count_left;
+  stddev_left_d = sqrt(stddev_left_d);
+
+  stddev_left_s_dot = stddev_left_s_dot / count_left;
+  stddev_left_s_dot = sqrt(stddev_left_s_dot);
+
+  stddev_left_d_dot = stddev_left_d_dot / count_left;
+  stddev_left_d_dot = sqrt(stddev_left_d_dot);
+
+  stddev_keep_s = stddev_keep_s / count_keep;
+  stddev_keep_s = sqrt(stddev_keep_s);
+
+  stddev_keep_d = stddev_keep_d / count_keep;
+  stddev_keep_d = sqrt(stddev_keep_d);
+
+  stddev_keep_s_dot = stddev_keep_s_dot / count_keep;
+  stddev_keep_s_dot = sqrt(stddev_keep_s_dot);
+
+  stddev_keep_d_dot = stddev_keep_d_dot / count_keep;
+  stddev_keep_d_dot = sqrt(stddev_keep_d_dot);
+
+  stddev_right_s = stddev_right_s / count_right;
+  stddev_right_s = sqrt(stddev_right_s);
+
+  stddev_right_d = stddev_right_d / count_right;
+  stddev_right_d = sqrt(stddev_right_d);
+
+  stddev_right_s_dot = stddev_right_s_dot / count_right;
+  stddev_right_s_dot = sqrt(stddev_right_s_dot);
+
+  stddev_right_d_dot = stddev_right_d_dot / count_right;
+  stddev_right_d_dot = sqrt(stddev_right_d_dot);
+
+  cout << "Printing the stddev values of left ..." << endl;
+  cout << stddev_left_s << " , " << stddev_left_d << " , " << stddev_left_s_dot << " , " << stddev_left_d_dot << endl;
+  cout << "Printing the stddev values of keep ..." << endl;
+  cout << stddev_keep_s << " , " << stddev_keep_d << " , " << stddev_keep_s_dot << " , " << stddev_keep_d_dot << endl;
+  cout << "Printing the stddev values of right ..." << endl;
+  cout << stddev_right_s << " , " << stddev_right_d << " , " << stddev_right_s_dot << " , " << stddev_right_d_dot << endl;
 }
 
-string GNB::predict(const vector<double> &sample) {
+string GNB::predict(const vector<double> &sample)
+{
   /**
    * Once trained, this method is called and expected to return 
    *   a predicted behavior for the given observation.
@@ -171,6 +244,6 @@ string GNB::predict(const vector<double> &sample) {
    *
    * TODO: Complete this function to return your classifier's prediction
    */
-  
-  return this -> possible_labels[1];
+
+  return this->possible_labels[1];
 }

@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/c/Users/Nikhparl/Documents/Aptiv_MY_Documents/Acads/Udacity/path_planning/prediction/classifier.cpp
+classifier.h
+/mnt/c/Users/Nikhparl/Documents/Aptiv_MY_Documents/Acads/Udacity/path_planning/prediction/classifier.h
+math.h
+-
+string
+-
+vector
+-
+iostream
+-
+
+/mnt/c/Users/Nikhparl/Documents/Aptiv_MY_Documents/Acads/Udacity/path_planning/prediction/classifier.h
+string
+-
+vector
+-
+eigen3/Eigen/Dense
+/mnt/c/Users/Nikhparl/Documents/Aptiv_MY_Documents/Acads/Udacity/path_planning/prediction/eigen3/Eigen/Dense
+
+/mnt/c/Users/Nikhparl/Documents/Aptiv_MY_Documents/Acads/Udacity/path_planning/prediction/main.cpp
+fstream
+-
+iostream
+-
+string
+-
+vector
+-
+classifier.h
+/mnt/c/Users/Nikhparl/Documents/Aptiv_MY_Documents/Acads/Udacity/path_planning/prediction/classifier.h
+
