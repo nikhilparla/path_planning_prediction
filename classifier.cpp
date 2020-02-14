@@ -19,6 +19,36 @@ GNB::GNB()
 
 GNB::~GNB() {}
 
+double mean_left_s;
+double mean_left_d;
+double mean_left_s_dot;
+double mean_left_d_dot;
+
+double mean_keep_s;
+double mean_keep_d;
+double mean_keep_s_dot;
+double mean_keep_d_dot;
+
+double mean_right_s;
+double mean_right_d;
+double mean_right_s_dot;
+double mean_right_d_dot;
+
+double stddev_keep_s;
+double stddev_keep_d;
+double stddev_keep_s_dot;
+double stddev_keep_d_dot;
+
+double stddev_right_s;
+double stddev_right_d;
+double stddev_right_s_dot;
+double stddev_right_d_dot;
+
+double stddev_left_s;
+double stddev_left_d;
+double stddev_left_s_dot;
+double stddev_left_d_dot;
+
 void GNB::train(const vector<vector<double>> &data,
                 const vector<string> &labels)
 {
@@ -40,35 +70,6 @@ void GNB::train(const vector<vector<double>> &data,
   // we have 4 features and 3 labels == 12 means and 12 std devs
   // so 24 variables in total if brute forcing
   // starting with mean for s/left feature lable
-  double mean_left_s;
-  double mean_left_d;
-  double mean_left_s_dot;
-  double mean_left_d_dot;
-
-  double mean_keep_s;
-  double mean_keep_d;
-  double mean_keep_s_dot;
-  double mean_keep_d_dot;
-
-  double mean_right_s;
-  double mean_right_d;
-  double mean_right_s_dot;
-  double mean_right_d_dot;
-
-  double stddev_keep_s;
-  double stddev_keep_d;
-  double stddev_keep_s_dot;
-  double stddev_keep_d_dot;
-
-  double stddev_right_s;
-  double stddev_right_d;
-  double stddev_right_s_dot;
-  double stddev_right_d_dot;
-
-  double stddev_left_s;
-  double stddev_left_d;
-  double stddev_left_s_dot;
-  double stddev_left_d_dot;
 
   int count_left = 0;
   int count_keep = 0;
@@ -235,14 +236,13 @@ void GNB::train(const vector<vector<double>> &data,
   cout << "Printing the stddev values of right ..." << endl;
   cout << stddev_right_s << " , " << stddev_right_d << " , " << stddev_right_s_dot << " , " << stddev_right_d_dot << endl;
 
-  prob_left = count_left/labels.size();
-  prob_keep = count_keep/labels.size();
-  prob_right = prob_right/labels.size();
+  prob_left = count_left / labels.size();
+  prob_keep = count_keep / labels.size();
+  prob_right = prob_right / labels.size();
 
   cout << endl;
   cout << "Printing the probablilites..." << endl;
   cout << prob_left << " , " << prob_keep << " , " << prob_right << endl;
-
 }
 
 string GNB::predict(const vector<double> &sample)
@@ -257,6 +257,80 @@ string GNB::predict(const vector<double> &sample)
    *
    * TODO: Complete this function to return your classifier's prediction
    */
+  double prob_s;
+  double prob_left = 1;
+  double prob_keep = 1;
+  double prob_right = 1;
 
-  return this->possible_labels[1];
+  // prob of s being left * prob of d being left * prob of sdot being left * prob of ddot being left
+  // prob of s being keep * prob of d being keep * prob of sdot being keep * prob of ddot being keep
+  // prob of s being right * prob of d being right * prob of sdot being right * prob of ddot being right
+  // Once you have all these probs, find the max one out of them.
+
+  // prob of being left
+  prob_s = exp(-1 * pow(sample[0] - mean_left_s,2) / (2 * pow(stddev_left_s,2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_left_s,2));
+  prob_left *= prob_s;
+
+  prob_s = exp(-1 * pow(sample[1] - mean_left_d,2) / (2 * pow(stddev_left_d,2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_left_s,2));
+  prob_left *= prob_s;
+
+  prob_s = exp(-1 * pow(sample[2] - mean_left_s_dot,2) / (2 * pow(stddev_left_s_dot,2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_left_s_dot,2));
+  prob_left *= prob_s;
+
+  prob_s = exp(-1 * pow(sample[3] - mean_left_d_dot,2) / (2 * pow(stddev_left_d_dot,2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_left_d_dot,2));
+  prob_left *= prob_s;
+
+  // prob of being keep
+  prob_s = exp(-1 * pow(sample[0] - mean_keep_s,2) / (2 * pow(stddev_keep_s,2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_keep_s,2));
+  prob_keep *= prob_s;
+
+  prob_s = exp(-1 * pow(sample[1] - mean_keep_d,2) / (2 * pow(stddev_keep_d,2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_keep_s,2));
+  prob_keep *= prob_s;
+
+  prob_s = exp(-1 * pow(sample[2] - mean_keep_s_dot,2) / (2 * pow(stddev_keep_s_dot,2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_keep_s_dot,2));
+  prob_keep *= prob_s;
+
+  prob_s = exp(-1 * pow(sample[3] - mean_keep_d_dot,2) / (2 * pow(stddev_keep_d_dot,2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_keep_d_dot,2));
+  prob_keep *= prob_s;
+
+  // prob of being right
+  prob_s = exp(-1 * pow(sample[0] - mean_right_s,2) / (2 * pow(stddev_right_s,2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_right_s,2));
+  prob_right *= prob_s;
+
+  prob_s = exp(-1 * pow(sample[1] - mean_right_d,2) / (2 * pow(stddev_right_d,2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_right_s,2));
+  prob_right *= prob_s;
+
+  prob_s = exp(-1 * pow(sample[2] - mean_right_s_dot,2) / (2 * pow(stddev_right_s_dot,2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_right_s_dot,2));
+  prob_right *= prob_s;
+
+  prob_s = exp(-1 * pow(sample[3] - mean_right_d_dot,2) / (2 * pow(stddev_right_d_dot,2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_right_d_dot,2));
+  prob_right *= prob_s;
+
+  if (prob_left >= prob_right)
+  {
+    if (prob_left >= prob_keep)
+    {
+      return this->possible_labels[0];
+    }
+    else
+    {
+      return this->possible_labels[1];
+    }
+  }
+  else
+  {
+    return this->possible_labels[1];
+  }
 }
