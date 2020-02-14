@@ -3,3 +3,5 @@ nd013-pred-data.zip
 nd013_pred_data/
 .vscode/
 build/
+cost_function/build/
+cost_function/main
