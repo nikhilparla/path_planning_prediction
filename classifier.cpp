@@ -49,6 +49,10 @@ double stddev_left_d;
 double stddev_left_s_dot;
 double stddev_left_d_dot;
 
+double p_left;
+double p_keep;
+double p_right;
+
 void GNB::train(const vector<vector<double>> &data,
                 const vector<string> &labels)
 {
@@ -74,10 +78,6 @@ void GNB::train(const vector<vector<double>> &data,
   int count_left = 0;
   int count_keep = 0;
   int count_right = 0;
-
-  double prob_left;
-  double prob_keep;
-  double prob_right;
 
   // printf("Size of data0 is %lu \n", data[0].size()) ;
   // printf("The first value is %f \n", data[0][0]);
@@ -236,13 +236,13 @@ void GNB::train(const vector<vector<double>> &data,
   cout << "Printing the stddev values of right ..." << endl;
   cout << stddev_right_s << " , " << stddev_right_d << " , " << stddev_right_s_dot << " , " << stddev_right_d_dot << endl;
 
-  prob_left = count_left / labels.size();
-  prob_keep = count_keep / labels.size();
-  prob_right = prob_right / labels.size();
+  p_left = count_left / labels.size();
+  p_keep = count_keep / labels.size();
+  p_right = count_right / labels.size();
 
   cout << endl;
   cout << "Printing the probablilites..." << endl;
-  cout << prob_left << " , " << prob_keep << " , " << prob_right << endl;
+  cout << p_left << " , " << p_keep << " , " << p_right << endl;
 }
 
 string GNB::predict(const vector<double> &sample)
@@ -268,55 +268,58 @@ string GNB::predict(const vector<double> &sample)
   // Once you have all these probs, find the max one out of them.
 
   // prob of being left
-  prob_s = exp(-1 * pow(sample[0] - mean_left_s,2) / (2 * pow(stddev_left_s,2)));
-  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_left_s,2));
+  prob_s = exp(-1 * pow(sample[0] - mean_left_s, 2) / (2 * pow(stddev_left_s, 2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_left_s, 2));
   prob_left *= prob_s;
 
-  prob_s = exp(-1 * pow(sample[1] - mean_left_d,2) / (2 * pow(stddev_left_d,2)));
-  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_left_s,2));
+  prob_s = exp(-1 * pow(sample[1] - mean_left_d, 2) / (2 * pow(stddev_left_d, 2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_left_s, 2));
   prob_left *= prob_s;
 
-  prob_s = exp(-1 * pow(sample[2] - mean_left_s_dot,2) / (2 * pow(stddev_left_s_dot,2)));
-  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_left_s_dot,2));
+  prob_s = exp(-1 * pow(sample[2] - mean_left_s_dot, 2) / (2 * pow(stddev_left_s_dot, 2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_left_s_dot, 2));
   prob_left *= prob_s;
 
-  prob_s = exp(-1 * pow(sample[3] - mean_left_d_dot,2) / (2 * pow(stddev_left_d_dot,2)));
-  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_left_d_dot,2));
+  prob_s = exp(-1 * pow(sample[3] - mean_left_d_dot, 2) / (2 * pow(stddev_left_d_dot, 2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_left_d_dot, 2));
   prob_left *= prob_s;
+  prob_left *= p_left;
 
   // prob of being keep
-  prob_s = exp(-1 * pow(sample[0] - mean_keep_s,2) / (2 * pow(stddev_keep_s,2)));
-  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_keep_s,2));
+  prob_s = exp(-1 * pow(sample[0] - mean_keep_s, 2) / (2 * pow(stddev_keep_s, 2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_keep_s, 2));
   prob_keep *= prob_s;
 
-  prob_s = exp(-1 * pow(sample[1] - mean_keep_d,2) / (2 * pow(stddev_keep_d,2)));
-  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_keep_s,2));
+  prob_s = exp(-1 * pow(sample[1] - mean_keep_d, 2) / (2 * pow(stddev_keep_d, 2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_keep_s, 2));
   prob_keep *= prob_s;
 
-  prob_s = exp(-1 * pow(sample[2] - mean_keep_s_dot,2) / (2 * pow(stddev_keep_s_dot,2)));
-  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_keep_s_dot,2));
+  prob_s = exp(-1 * pow(sample[2] - mean_keep_s_dot, 2) / (2 * pow(stddev_keep_s_dot, 2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_keep_s_dot, 2));
   prob_keep *= prob_s;
 
-  prob_s = exp(-1 * pow(sample[3] - mean_keep_d_dot,2) / (2 * pow(stddev_keep_d_dot,2)));
-  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_keep_d_dot,2));
+  prob_s = exp(-1 * pow(sample[3] - mean_keep_d_dot, 2) / (2 * pow(stddev_keep_d_dot, 2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_keep_d_dot, 2));
   prob_keep *= prob_s;
+  prob_keep *= p_keep;
 
   // prob of being right
-  prob_s = exp(-1 * pow(sample[0] - mean_right_s,2) / (2 * pow(stddev_right_s,2)));
-  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_right_s,2));
+  prob_s = exp(-1 * pow(sample[0] - mean_right_s, 2) / (2 * pow(stddev_right_s, 2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_right_s, 2));
   prob_right *= prob_s;
 
-  prob_s = exp(-1 * pow(sample[1] - mean_right_d,2) / (2 * pow(stddev_right_d,2)));
-  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_right_s,2));
+  prob_s = exp(-1 * pow(sample[1] - mean_right_d, 2) / (2 * pow(stddev_right_d, 2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_right_s, 2));
   prob_right *= prob_s;
 
-  prob_s = exp(-1 * pow(sample[2] - mean_right_s_dot,2) / (2 * pow(stddev_right_s_dot,2)));
-  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_right_s_dot,2));
+  prob_s = exp(-1 * pow(sample[2] - mean_right_s_dot, 2) / (2 * pow(stddev_right_s_dot, 2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_right_s_dot, 2));
   prob_right *= prob_s;
 
-  prob_s = exp(-1 * pow(sample[3] - mean_right_d_dot,2) / (2 * pow(stddev_right_d_dot,2)));
-  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_right_d_dot,2));
+  prob_s = exp(-1 * pow(sample[3] - mean_right_d_dot, 2) / (2 * pow(stddev_right_d_dot, 2)));
+  prob_s = prob_s / sqrt(2 * M_PI * pow(stddev_right_d_dot, 2));
   prob_right *= prob_s;
+  prob_right *= p_right;
 
   if (prob_left >= prob_right)
   {
