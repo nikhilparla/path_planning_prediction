@@ -5,3 +5,9 @@ nd013_pred_data/
 build/
 cost_function/build/
 cost_function/main
+build/CMakeFiles/CMakeOutput.log
+build/CMakeFiles/Makefile.cmake
+build/CMakeFiles/main.dir/CXX.includecache
+build/CMakeFiles/main.dir/build.make
+build/CMakeFiles/main.dir/classifier.cpp.o
+
