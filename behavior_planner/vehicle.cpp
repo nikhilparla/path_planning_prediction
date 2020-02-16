@@ -48,23 +48,28 @@ vector<Vehicle> Vehicle::choose_next_state(map<int, vector<Vehicle>> &prediction
    */
   vector<string> states = successor_states();
   float cost = 1.0;
-  float temp_cost = cost;
-  vector<Vehicle> traj;
+  vector<float> costs;
+  vector<vector<Vehicle>> final_trajectories;
   for(vector<string>::iterator it = states.begin() ; it != states.end(); it++)
   {
-      vector<Vehicle> veh = generate_trajectory(*it, predictions);
-      if(veh.size() != 0)
+      vector<Vehicle> traj = generate_trajectory(*it, predictions);
+      if(traj.size() != 0)
       {
-          cost = calculate_cost(*this, predictions, veh);
-          if(cost < temp_cost)
-                traj = veh;
+          cost = calculate_cost(*this, predictions, traj);
+          costs.push_back(cost);
+          final_trajectories.push_back(traj);
       }
   } 
+  // get the min cost from the array
+  vector<float>::iterator min_cost = min_element(begin(costs), end(costs));
+
+  // now get the index of that to search for the trajectory
+  int index = distance(begin(costs),min_cost );
 
   /**
    * TODO: Change return value here:
    */
-  return traj;
+  return final_trajectories[index];
 }
 
 vector<string> Vehicle::successor_states() {
